@@ -1,12 +1,43 @@
 import { Box, Button, Flex, Input, Text } from "@chakra-ui/react";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { fetcher } from "../../utils/fetcher";
+import { useRouter } from "next/router";
 
 interface subprops {
   hidden: boolean;
   modeSwitcher: Dispatch<SetStateAction<boolean>>;
 }
 
+interface UserInfo {
+  email: string;
+  password: string;
+}
+
+async function SignIn(
+  info: UserInfo,
+  setShowError: Dispatch<SetStateAction<boolean>>
+) {
+  if (info.email !== "" && info.password != "") {
+    const successful = await fetcher<boolean>("POST", "signin", info);
+    console.log(successful);
+    if (successful) {
+      const router = useRouter();
+      router.push("/dashboard");
+    } else {
+      setShowError(true);
+    }
+  } else {
+    setShowError(true);
+  }
+}
+
 const SignInComponent = (props: subprops) => {
+  const [showError, setShowError] = useState<boolean>(false);
+  const [loginData, setLoginData] = useState<UserInfo>({
+    email: "",
+    password: "",
+  });
+
   if (props.hidden) {
     return null;
   }
@@ -15,8 +46,39 @@ const SignInComponent = (props: subprops) => {
       <Text fontSize={"3xl"} textAlign={"center"} fontWeight={"semibold"}>
         Sign in
       </Text>
-      <Input placeholder={"email"} my={1}></Input>
-      <Input placeholder={"password"} type={"password"} my={1}></Input>
+      <Text
+        textAlign={"center"}
+        color={"red.500"}
+        fontWeight={"semibold"}
+        hidden={!showError}
+      >
+        The entered Email or Password is incorrect
+      </Text>
+      <Input
+        id={"email"}
+        placeholder={"email"}
+        my={1}
+        value={loginData.email}
+        onChange={(e) => {
+          setLoginData((prev) => {
+            return { ...prev, email: e.target.value };
+          });
+          setShowError(false);
+        }}
+      ></Input>
+      <Input
+        id={"password"}
+        placeholder={"password"}
+        type={"password"}
+        my={1}
+        value={loginData.password}
+        onChange={(e) => {
+          setLoginData((prev) => {
+            return { ...prev, password: e.target.value };
+          });
+          setShowError(false);
+        }}
+      ></Input>
       <Flex flexDir={"row"} justifyContent={"space-between"}>
         <Button
           my={1}
@@ -36,6 +98,9 @@ const SignInComponent = (props: subprops) => {
           _hover={{ bg: "confirmColourHover" }}
           _active={{ bg: "confirmColourClick" }}
           textColor={"subColour"}
+          onClick={(e) => {
+            SignIn(loginData, setShowError);
+          }}
         >
           Sign in
         </Button>

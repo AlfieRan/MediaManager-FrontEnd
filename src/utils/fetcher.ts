@@ -5,11 +5,11 @@ export async function fetcher<T>(
   endpoint: string,
   body?: unknown
 ): Promise<SuccessResponse<T>> {
-  const request = await fetch(`https://localhost.com:8000/${endpoint}`, {
+  const request = await fetch(`https://localhost:8000/${endpoint}`, {
     method,
     credentials: "include",
     headers: body ? { "Content-Type": "application/json" } : undefined,
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? JSON.stringify(body) : undefined,
   });
 
   const json: ApiResponse<T> = await request.json();
