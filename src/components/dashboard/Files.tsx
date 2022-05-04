@@ -7,7 +7,7 @@ const Summary = (props: { hidden?: boolean }) => {
   return (
     <Box w={"full"} h={"full"} bg={"white"} borderRadius={"xl"}>
       <Center>
-        <Text fontSize={"3xl"}>Summary</Text>
+        <Text fontSize={"3xl"}>Files</Text>
       </Center>
     </Box>
   );

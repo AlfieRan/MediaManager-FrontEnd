@@ -1,7 +1,10 @@
-import { Flex, Link, Spacer, Button } from "@chakra-ui/react";
-import { useState } from "react";
+import { Flex, Link, Spacer, Button, Text } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
 import Overview from "../components/dashboard/Overview";
-import Summary from "../components/dashboard/Summary";
+import Schedule from "../components/dashboard/Schedule";
+import Files from "../components/dashboard/Files";
+import Redirector from "../components/signin/Redirector";
+import { useRouter } from "next/router";
 
 interface subPageInfo {
   name: string;
@@ -14,14 +17,26 @@ const Page = (props: { hidden?: boolean }) => {
       component: <Overview />,
     },
     {
-      name: "Summary",
-      component: <Summary />,
+      name: "Files",
+      component: <Files />,
+    },
+    {
+      name: "Schedule",
+      component: <Schedule />,
     },
   ];
 
   const [CurrentlyShowing, setCurrentlyShowing] = useState<subPageInfo>(
     subPages[0]
   );
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router && router.query.id) {
+      console.log(`query: ${router.query.id}`);
+    }
+  }, [router]);
 
   if (props.hidden) {
     return null;
@@ -33,21 +48,20 @@ const Page = (props: { hidden?: boolean }) => {
         "-webkit-linear-gradient(to left, #91EAE4, #86A8E7, #7F7FD5)" &&
         "linear-gradient(to left, #91EAE4, #86A8E7, #7F7FD5)"
       }
+      h={"95vh"}
     >
       <Flex
         w={"20vw"}
-        h={"100vh"}
+        h={"full"}
         bg={"rgba(255,255,255,0.25)"}
         flexDir={"column"}
         py="2"
         px={"5"}
       >
-        <Link href={"/"} fontSize={"3xl"} color={"white"}>
-          MonoManager
-        </Link>
         <Spacer />
         {subPages.map((data) => (
           <Button
+            id={data.name}
             onClick={(e) => {
               setCurrentlyShowing(data);
             }}
@@ -58,9 +72,10 @@ const Page = (props: { hidden?: boolean }) => {
         ))}
         <Spacer />
       </Flex>
-      <Flex w={"full"} h={"100vh"} p={"10"}>
+      <Flex w={"full"} h={"full"} p={"10"}>
         {CurrentlyShowing.component}
       </Flex>
+      <Redirector />
     </Flex>
   );
 };

@@ -13,30 +13,29 @@ interface UserInfo {
   password: string;
 }
 
-async function SignIn(
-  info: UserInfo,
-  setShowError: Dispatch<SetStateAction<boolean>>
-) {
-  if (info.email !== "" && info.password != "") {
-    const successful = await fetcher<boolean>("POST", "signin", info);
-    console.log(successful);
-    if (successful) {
-      const router = useRouter();
-      router.push("/dashboard");
-    } else {
-      setShowError(true);
-    }
-  } else {
-    setShowError(true);
-  }
-}
-
 const SignInComponent = (props: subprops) => {
+  const router = useRouter();
   const [showError, setShowError] = useState<boolean>(false);
   const [loginData, setLoginData] = useState<UserInfo>({
     email: "",
     password: "",
   });
+
+  async function SignIn(
+    info: UserInfo,
+    setShowError: Dispatch<SetStateAction<boolean>>
+  ) {
+    if (info.email !== "" && info.password != "") {
+      const successful = await fetcher<boolean>("POST", "signin", info);
+      if (successful) {
+        router.push("/portal");
+      } else {
+        setShowError(true);
+      }
+    } else {
+      setShowError(true);
+    }
+  }
 
   if (props.hidden) {
     return null;
